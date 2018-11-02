@@ -178,10 +178,7 @@ namespace Business_Intelligence.Models
                     {
                         builder.Replace(",", "");
                         builder.Replace(" ", "");
-                        /*       obj.Segmento.Replace(",", "");
-                               obj.Segmento.Replace(" ", "");*/
 
-                        //        char[] segs = obj.Segmento.ToCharArray();
                         char[] segs = builder.ToString().ToCharArray();
                         char[] segmentosSelecionados = new char[segs.Length];
 
@@ -193,17 +190,15 @@ namespace Business_Intelligence.Models
                             {
                                 query += " AND (PRODUTO_SEGMENTO = " + segmentosSelecionados[i];
                             }
-                            else
+                            else if (i == segs.Length-1)
                             {
                                 query += " OR PRODUTO_SEGMENTO = " + segmentosSelecionados[i] + ") ";
                             }
+                            else
+                            {
+                                query += " OR PRODUTO_SEGMENTO = " + segmentosSelecionados[i] ;
+                            }
                         }
-
-                   /*     var segReplaced = obj.Segmento.Replace(",", " ");
-                        string moreSegments = segReplaced.Substring(segReplaced.IndexOf(" ")-1, segReplaced.Length-1).Trim();
-                        var firstSegReplaced = segReplaced.Replace(moreSegments, " ").Trim();
-                        query += " AND (PRODUTO_SEGMENTO = " + moreSegments;
-                        query += " OR PRODUTO_SEGMENTO = " + firstSegReplaced + ") ";*/
 
                     }
 
