@@ -141,6 +141,8 @@ namespace Business_Intelligence.Models
          //   return data;
         }
 
+
+        //Metodo para procurar os insights dos produtos
         public static List<VendasClienteProduto> getProductsInsights(SearchObjects obj)
         {
             string query = "SELECT TOP(10) * FROM VW_VendasClienteProduto WHERE 1 = 1";
@@ -264,6 +266,137 @@ namespace Business_Intelligence.Models
             }
             //   return data;
         }
+
+        //RETRIEVE SEGMENTS/INVOICE INSIGHTS
+        public static List<VendasClienteProduto> getSegmentsInsights(SearchObjects obj)
+        {
+            string query = @"SELECT DISTINCT A.PRODUTO_SEGMENTO, (SELECT SUM(T.VENDA_VLR) 
+                            FROM VW_VendasClienteProduto T WHERE T.PRODUTO_SEGMENTO = A.PRODUTO_SEGMENTO)
+                            FROM VW_VendasClienteProduto A
+                            WHERE 1 = 1";
+
+            List<VendasClienteProduto> lista = new List<VendasClienteProduto>();
+
+            if (DBConnection.isConnected == false)
+            {
+                DBConnection.connect();
+            }
+
+            try
+            {
+
+                if (obj.Cpf != null && !obj.Cpf.Equals("''"))
+                {
+                    query += " AND CLIENTE_ID = " + obj.Cpf;
+                }
+
+                if (obj.Cliente != null && !obj.Cliente.Equals("''"))
+                {
+                    query += " AND CLIENTE_NAME = '" + obj.Cliente + "'";
+                }
+
+                if (obj.Produto != null && !obj.Produto.Equals("''"))
+                {
+                    query += " AND PRODUCT_ID = " + obj.Produto;
+                }
+
+                if (obj.Segmento != null && !obj.Segmento.Equals("''"))
+                {
+                    StringBuilder builder = new StringBuilder(obj.Segmento);
+
+                    if (obj.Segmento.Contains(","))
+                    {
+                        builder.Replace(",", "");
+                        builder.Replace(" ", "");
+
+                        char[] segs = builder.ToString().ToCharArray();
+                        char[] segmentosSelecionados = new char[segs.Length];
+
+                        for (int i = 0; i < segs.Length; i++)
+                        {
+                            segmentosSelecionados[i] = segs[i];
+
+                            if (i == 0)
+                            {
+                                query += " AND (PRODUTO_SEGMENTO = " + segmentosSelecionados[i];
+                            }
+                            else if (i == segs.Length - 1)
+                            {
+                                query += " OR PRODUTO_SEGMENTO = " + segmentosSelecionados[i] + ") ";
+                            }
+                            else
+                            {
+                                query += " OR PRODUTO_SEGMENTO = " + segmentosSelecionados[i];
+                            }
+                        }
+
+                    }
+
+                    else
+                    {
+                        query += " AND PRODUTO_SEGMENTO = " + obj.Segmento;
+                    }
+                }
+
+                if (obj.DataIni != null && !obj.DataIni.Equals("''"))
+                {
+                    query += " AND DATA_VENDA >= '" + obj.DataIni + "'";
+                }
+
+                if (obj.DataFim != null && !obj.DataFim.Equals("''"))
+                {
+                    query += " AND DATA_VENDA <= '" + obj.DataFim + "'";
+                }
+
+                if (obj.Cidade != null && !obj.Cidade.Equals("''"))
+                {
+                    query += " AND CIDADE = '" + obj.Cidade + "'";
+                }
+
+                SqlDataReader reader = DBConnection.getResults(query);
+                // SqlDataReader reader = DBConnection.getResults("SELECT * FROM VW_VendasClienteProduto WHERE CLIENTE_ID = " + obj.Cpf);
+
+                while (reader.Read() != false)
+                {
+                    var val1 = reader.GetValue(1).ToString();
+                    var val2 = reader.GetValue(0);
+              //      var val3 = reader.GetValue(4).ToString();
+              //      var val4 = reader.GetValue(5);
+
+                    lista.Add(new VendasClienteProduto(val1, Convert.ToInt32(val2), "", 1));
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
+            DBConnection.closeConnections();
+
+            /*
+            for (int i = 0; i < 200; i++)
+            {
+                lista.Add(new VendasClienteProduto("cliente " + i, i, "produto " + i, i + 3));
+            }*/
+            // return lista;
+
+            if (lista.Count > 0)
+            {
+                /* var data = (from item in lista
+                             where item.id_cliente == Convert.ToInt32(obj.Cpf) && item.cliente == obj.Cliente
+                             select item).First();*/
+
+                return lista;
+            }
+            else
+            {
+                return null;
+            }
+            //   return data;
+        }
+
+
+
 
 
     }

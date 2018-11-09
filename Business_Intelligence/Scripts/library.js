@@ -1,6 +1,9 @@
 //var url = "api/VendasClienteProduto";
 //var url = "api/SearchObjects/"
 var url = "api/SearchObjects/CPF/''/Produto/''/Segmento/''/Cliente/''/Cidade/''/DataIni/''/DataFim/''/";
+var url2 = "api/SearchObjects/CPF/''/Produto/''/Segmento/''/Cliente/''/Cidade/''/DataIni/''/DataFim/''/Segment";
+var url3 = "api/SearchObjects/CPF/''/Produto/''/Segmento/''/Cliente/''/Cidade/''/DataIni/''/DataFim/''/";
+
 
 //funcao para mostrar o text field referente ao filtro selecionado
        function chFilter(num, id) {
@@ -155,44 +158,77 @@ var url = "api/SearchObjects/CPF/''/Produto/''/Segmento/''/Cliente/''/Cidade/''/
      // 
 //funcao para enviar os requests
        function sendRequest(url) {
-        //   alert(url);
+           //   alert(url);
+           document.getElementById("loadingDiv").color = "green";
+           document.getElementById("loadingDiv").hidden = false;
            var xhtp = new XMLHttpRequest();
+           var xhtp2 = new XMLHttpRequest();
+        //   var xhtp3 = new XMLHttpRequest();
+
            var jsonResponse;
        //    alert(1);
         //   alert(url);
+
+           //xhtp para os dois primeiros divs
            xhtp.onreadystatechange = function f () {
            //    alert(3);
                if (this.status == 200 && this.readyState == 4) {
-           //        alert('response fine!');
+     
                    jsonResponse = JSON.parse(xhtp.response);
-                   //     document.getElementById("lblValue").innerText = jsonResponse.cliente;
+                   drawChart(jsonResponse, 'ProductsDiv');
+                   drawChart(jsonResponse, 'ClientsDiv');
 
-                   drawChart(jsonResponse);
-              //     alert('Cliente: ' + jsonResponse.cliente);
-                 //  alert('Cliente: '+ jsonResponse.cliente);
-                   // alert(1111);
-                   
                }
+
                resetURLParamValues();
+
                var chBoxes = document.getElementsByTagName("chbAttribute");
 
                for (var i = 0; i < chBoxes.length; i++) {
                    removeParamFromURL(chBoxes[i]);
                }
+               document.getElementById("loadingDiv").hidden = true;
+
+               xhtp2.open("GET", url2, true);
+               xhtp2.send();
 
                return jsonResponse;
            }
-          
+           jsonResponse = "";
+           console.log('jsonresponse reseted:  ' + jsonResponse);
+           //nova funcao para teste por segmentos
+           xhtp2.onreadystatechange = function f() {
+               //    alert(3);
+               if (this.status == 200 && this.readyState == 4) {
+
+                   jsonResponse = JSON.parse(xhtp.response);
+                   drawChart(jsonResponse, 'SegmentsDiv');
+
+               }
+
+               resetURLParamValues();
+
+               var chBoxes = document.getElementsByTagName("chbAttribute");
+
+               for (var i = 0; i < chBoxes.length; i++) {
+                   removeParamFromURL(chBoxes[i]);
+               }
+               document.getElementById("loadingDiv").hidden = true;
+               return jsonResponse;
+           }
+
+           /*
+           xhtp2.open("GET", url2, true);
+           xhtp2.send();*/
            
-    //       alert(2);
-      //     alert(jsonResponse);
            xhtp.open("GET", url, true);
            xhtp.send();
          
          //  return jsonResponse.cliente;
        }
 
-       function drawChart(response) {
+    //   function drawChart(response) {
+           function drawChart(response, divID) {
            document.getElementById("lblLoading").innerText = 'Loading';
            validateDates('txtDataIni', 'txtDataFim');
            getValueFromFields();
@@ -225,18 +261,23 @@ var url = "api/SearchObjects/CPF/''/Produto/''/Segmento/''/Cliente/''/Cidade/''/
            };
 
            // Instantiate and draw our chart, passing in some options.
-           var chartProducts = new google.visualization.PieChart(document.getElementById('ProductsDiv'));
+               //    var chartProducts = new google.visualization.PieChart(document.getElementById('ProductsDiv'));
+            var chartProducts = new google.visualization.PieChart(document.getElementById(divID));
            chartProducts.draw(data, options);
            
-           var chartClients = new google.visualization.BarChart(document.getElementById('ClientsDiv'));
-           chartClients.draw(data, options);
+      //     var chartClients = new google.visualization.BarChart(document.getElementById('ClientsDiv'));
+      //     chartClients.draw(data, options);
+
+       /*    var chartSegments = new google.visualization.ColumnChart(document.getElementById('SegmentsDiv'));
+           chartSegments.draw(data, options);*/
 
            var chBoxes = document.getElementsByTagName("chbAttribute");
 
           
 
          //  var url = "api/SearchObjects/CPF/''/Produto/''/Segmento/''/Cliente/''/Cidade/''/DataIni/''/DataFim/''/";
-           console.log(url);
+               console.log(url);
+               console.log(url2);
            document.getElementById("lblLoading").innerText = 'Loaded';
        }
       
@@ -272,7 +313,8 @@ var url = "api/SearchObjects/CPF/''/Produto/''/Segmento/''/Cliente/''/Cidade/''/
                    }
                    
                    }
-           } console.log(url);//alert(url);
+               } console.log(url);//alert(url);
+           //    console.log(url2);
            }
        }
 

@@ -88,6 +88,13 @@
              width:30%
          }
 
+         .divLoading{
+             height:5%;
+             width: 100%;
+             text-align:center;
+             align-items:center
+         }
+
     </style>
 
 </head>
@@ -188,6 +195,10 @@
            <label id="lblLoading"></label>
        </div>
 
+       <div id="loadingDiv" class="divLoading" hidden="hidden">
+           <label id="lblLoadingCharts"></label>
+       </div>
+
        <div class="row" style="margin-left:10px">
 
             <div class="divCharts">
@@ -213,11 +224,20 @@
 
                 </div>
 
-              <!--  <div class="col-lg-4" id="Products_Clients_Div" style="border-color:black; border:solid">
+            </div>
 
-                </div>  !-->
+             <div class="row" style="align-content:center; align-items:center">
+
+                <div class="col-lg-5" id="SegmentsDiv" style="border-color:black; border:solid; margin-right:5px; margin-left:100px">
+
+                </div>
+<!--
+                <div class="col-lg-5" id="ClientsDiv" style="border-color:black; border:solid">
+
+                </div>     !-->
 
             </div>
+
         </div>
     </form>
 </body>
