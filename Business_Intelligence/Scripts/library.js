@@ -2,7 +2,7 @@
 //var url = "api/SearchObjects/"
 var url = "api/SearchObjects/CPF/''/Produto/''/Segmento/''/Cliente/''/Cidade/''/DataIni/''/DataFim/''/";
 var url2 = "api/SearchObjects/CPF/''/Produto/''/Segmento/''/Cliente/''/Cidade/''/DataIni/''/DataFim/''/Segment";
-var url3 = "api/SearchObjects/CPF/''/Produto/''/Segmento/''/Cliente/''/Cidade/''/DataIni/''/DataFim/''/";
+var url3 = "api/SearchObjects/CPF/''/Produto/''/Segmento/''/Cliente/''/Cidade/''/DataIni/''/DataFim/''/Clients";
 
 
 //funcao para mostrar o text field referente ao filtro selecionado
@@ -159,11 +159,13 @@ var url3 = "api/SearchObjects/CPF/''/Produto/''/Segmento/''/Cliente/''/Cidade/''
 //funcao para enviar os requests
        function sendRequest(url) {
            //   alert(url);
+           document.getElementById("lblLoading").innerText = 'Loading';
+
            document.getElementById("loadingDiv").color = "green";
            document.getElementById("loadingDiv").hidden = false;
            var xhtp = new XMLHttpRequest();
            var xhtp2 = new XMLHttpRequest();
-        //   var xhtp3 = new XMLHttpRequest();
+           var xhtp3 = new XMLHttpRequest();
 
            var jsonResponse;
        //    alert(1);
@@ -177,7 +179,9 @@ var url3 = "api/SearchObjects/CPF/''/Produto/''/Segmento/''/Cliente/''/Cidade/''
                    jsonResponse = JSON.parse(xhtp.response);
                    drawChart(jsonResponse, 'ProductsDiv');
                    drawChart(jsonResponse, 'ClientsDiv');
+                   console.log("before open URL - > " + url);
 
+                   getValueFromFields(url);
                    xhtp2.open("GET", url, true);
                    xhtp2.send();
 
@@ -206,6 +210,29 @@ var url3 = "api/SearchObjects/CPF/''/Produto/''/Segmento/''/Cliente/''/Cidade/''
                    jsonResponse = JSON.parse(xhtp.response);
                    drawChart(jsonResponse, 'SegmentsDiv');
 
+                   xhtp3.open("GET", url3, true);
+                   xhtp3.send();
+
+               }
+
+               resetURLParamValues();
+
+               var chBoxes = document.getElementsByTagName("chbAttribute");
+
+               for (var i = 0; i < chBoxes.length; i++) {
+                   removeParamFromURL(chBoxes[i]);
+               }
+               document.getElementById("loadingDiv").hidden = true;
+               return jsonResponse;
+           }
+
+           xhtp3.onreadystatechange = function f() {
+               //    alert(3);
+               if (this.status == 200 && this.readyState == 4) {
+
+                   jsonResponse = JSON.parse(xhtp.response);
+                   drawChart(jsonResponse, 'ClientsDiv');
+
                }
 
                resetURLParamValues();
@@ -222,7 +249,7 @@ var url3 = "api/SearchObjects/CPF/''/Produto/''/Segmento/''/Cliente/''/Cidade/''
            /*
            xhtp2.open("GET", url2, true);
            xhtp2.send();*/
-           
+
            xhtp.open("GET", url2, true);
            xhtp.send();
          
@@ -231,9 +258,10 @@ var url3 = "api/SearchObjects/CPF/''/Produto/''/Segmento/''/Cliente/''/Cidade/''
 
     //   function drawChart(response) {
            function drawChart(response, divID) {
-           document.getElementById("lblLoading").innerText = 'Loading';
            validateDates('txtDataIni', 'txtDataFim');
-           getValueFromFields();
+               getValueFromFields(url);
+               getValueFromFields(url3);
+
 
            var jsonData = response;
            // var jsonData = sendRequest(url);
@@ -261,34 +289,36 @@ var url3 = "api/SearchObjects/CPF/''/Produto/''/Segmento/''/Cliente/''/Cidade/''
 
                    var objIteration = vector[i];
                    console.log('obj1  - > ' + objIteration);
+                   console.log('length do objeto: ' + objIteration.length);
 
                    if (divID == 'SegmentsDiv') {
                        for (var j = 0; j < 3; j++) {
-                      // for (var j = 1; j < 3; j++) {
+                           // for (var j = 1; j < 3; j++) {
 
                            var objIteraction1 = objIteration[j];
-                           console.log('obj2  - > ' + objIteraction1.cliente);
+                           console.log('obj2  - > ' + objIteraction1.produto + 'length do objeto: ' + objIteration.length);
                            data.addRow(['Segmento ' + objIteraction1.id_cliente, parseInt(objIteraction1.cliente)]);
                        }
                    } else if (divID == 'ProductsDiv') {
 
-                       for (var j = 0; j < objIteration.length-3; j++) {
+                       for (var j = 0; j < objIteration.length - 8; j++) {
 
                            var objIteraction1 = objIteration[j];
-                           console.log('obj2  - > ' + objIteraction1.produto);
-                           data.addRow([objIteraction1.produto, parseInt(objIteraction1.id_produto)]);
+                           console.log('obj2  - > ' + objIteraction1.produto + 'length do objeto: ' + objIteration.length);
+                           data.addRow(['Produto ' + objIteraction1.id_cliente, parseInt(objIteraction1.cliente)]);
                        }
                    }
 
                    else if (divID == 'ClientsDiv') {
 
-                       for (var j = 0; j < objIteration.length - 3; j++) {
+                       for (var j = 1; j < objIteration.length - 3; j++) {
 
                            var objIteraction1 = objIteration[j];
-                           console.log('obj2  - > ' + objIteraction1.produto);
-                           data.addRow([objIteraction1.produto, parseInt(objIteraction1.id_produto)]);
+                           console.log('obj2  - > ' + objIteraction1.produto + 'length do objeto: ' + objIteration.length);
+                           data.addRow(['Cliente ' + objIteraction1.id_cliente, parseInt(objIteraction1.cliente)]);
                        }
                    }
+                   
                    }
 
            
@@ -332,39 +362,41 @@ var url3 = "api/SearchObjects/CPF/''/Produto/''/Segmento/''/Cliente/''/Cidade/''
            return obj.value;
        }
 //pega os valores dos campos
-       function getValueFromFields() {
-         
-           var obj = document.getElementsByClassName("txtFieldsSize");
+function getValueFromFields(param) {
 
-           for (var i = 0; i < obj.length; i++) {
-               var currObj = document.getElementById(transformObj(obj[i].id, "checkbox"));
-               if (obj[i].hidden == false && obj[i].value != '') {
-                   //if (url.includes(document.getElementById(transformObj(obj[i].id, "checkbox")).value)) { //validação para ver se o valor do campo ja esta inserido na url
-               if (((url.includes(currObj.value + '//') == false) || (url.includes(currObj.value + "/''/") == true)) && obj[i].value == '')
-                   {
-                   console.log('test ' + currObj.value + '// - ' + url.includes(currObj.value + '//') + ' - ' + url.includes(currObj.value + "/''/"));
-                  // alert('test' + currObj.value + '//');
-               } else if (!(url.includes(currObj.value + '/' + obj[i].value))){
-                   // url += document.getElementById(transformObj(obj[i].id, "checkbox")).value + '/' + getValue(obj[i].id) + '/';
-                   //  var pos = url.indexOf(currObj.value);
-                   url = url.replace(currObj.value + "/''" ,  currObj.value + "/" + getValue(obj[i].id));
-                   console.log(currObj.value + '/', currObj.value + '/' + getValue(obj[i].id));
-                   //  alert(currObj.value + '/', currObj.value + '/' + getValue(obj[i].id));
-               }else{  if (obj[i].value == '') {
-                       url = url.replace(currObj.value + '/', currObj.value + "/''");
-                   }
-                   
-                   }
-               } console.log(url);//alert(url);
-           //    console.log(url2);
-           }
-       }
+    var obj = document.getElementsByClassName("txtFieldsSize");
+
+    for (var i = 0; i < obj.length; i++) {
+        var currObj = document.getElementById(transformObj(obj[i].id, "checkbox"));
+        if (obj[i].hidden == false && obj[i].value != '') {
+            //if (param.includes(document.getElementById(transformObj(obj[i].id, "checkbox")).value)) { //validação para ver se o valor do campo ja esta inserido na param
+            if (((param.includes(currObj.value + '//') == false) || (param.includes(currObj.value + "/''/") == true)) && obj[i].value == '') {
+                console.log('test ' + currObj.value + '// - ' + param.includes(currObj.value + '//') + ' - ' + param.includes(currObj.value + "/''/"));
+                // alert('test' + currObj.value + '//');
+            } else if (!(param.includes(currObj.value + '/' + obj[i].value))) {
+                // param += document.getElementById(transformObj(obj[i].id, "checkbox")).value + '/' + getValue(obj[i].id) + '/';
+                //  var pos = param.indexOf(currObj.value);
+                param = param.replace(currObj.value + "/''", currObj.value + "/" + getValue(obj[i].id));
+                console.log(currObj.value + '/', currObj.value + '/' + getValue(obj[i].id));
+                //  alert(currObj.value + '/', currObj.value + '/' + getValue(obj[i].id));
+            } else {
+                if (obj[i].value == '') {
+                    param = param.replace(currObj.value + '/', currObj.value + "/''");
+                }
+
+            }
+        } console.log(param);//alert(param);
+        //    console.log(param2);
+    }
+}
 
 //função que valida, e pega informaçções dos campos quando submeter a busca
        function validate() {
 
           validateDates('txtDataIni', 'txtDataFim');
-          getValueFromFields();
+           getValueFromFields(url);
+           getValueFromFields(url3);
+
 
            //    sendRequest(url + '/' + document.getElementById("txtCPF").value);
           sendRequest(url);
@@ -379,13 +411,14 @@ var url3 = "api/SearchObjects/CPF/''/Produto/''/Segmento/''/Cliente/''/Cidade/''
        function removeParamFromURL(obj) {
           // alert(1);
            var txtObj = document.getElementById(transformObj(obj.id, 'text'));
-           console.log(txtObj);
+          // console.log(txtObj);
            url = url.replace(obj.value + '/' + txtObj.value + '/', obj.value + "/''/");
-        
+           url3 = url3.replace(obj.value + '/' + txtObj.value + '/', obj.value + "/''/");
        }
 
        function resetURLParamValues() {
 
            url = "api/SearchObjects/CPF/''/Produto/''/Segmento/''/Cliente/''/Cidade/''/DataIni/''/DataFim/''/";
+           url3 = "api/SearchObjects/CPF/''/Produto/''/Segmento/''/Cliente/''/Cidade/''/DataIni/''/DataFim/''/Clients";
 
        }
