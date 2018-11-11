@@ -20,6 +20,8 @@ namespace Business_Intelligence.Models
         public string DataIni { get; set; }
         public string DataFim { get; set; }
 
+        public static List<VendasClienteProduto>[] requestsResponses = new List<VendasClienteProduto>[2];
+
         public int QtdProduto { get; set; }
 
         public SearchObjects(string cpf, string produto, string segmento, string cliente, string cidade, string dataIni, string dataFim)
@@ -143,8 +145,12 @@ namespace Business_Intelligence.Models
 
 
         //Metodo para procurar os insights dos produtos
-        public static List<VendasClienteProduto> getProductsInsights(SearchObjects obj)
+       // public static List<VendasClienteProduto> getProductsInsights(SearchObjects obj)
+        public static List<List<VendasClienteProduto>> getProductsInsights(SearchObjects obj)
         {
+
+            //requestsResponses = new List<VendasClienteProduto>[2];
+
             string query = "SELECT TOP(10) * FROM VW_VendasClienteProduto WHERE 1 = 1";
 
             List<VendasClienteProduto> lista = new List<VendasClienteProduto>();
@@ -236,7 +242,11 @@ namespace Business_Intelligence.Models
                     var val4 = reader.GetValue(5);
 
                     lista.Add(new VendasClienteProduto(val1, Convert.ToInt32(val2), val3, Convert.ToInt32(val4)));
+
+                    
                 }
+
+                requestsResponses[0] = lista;
             }
             catch (Exception e)
             {
@@ -258,7 +268,8 @@ namespace Business_Intelligence.Models
                              where item.id_cliente == Convert.ToInt32(obj.Cpf) && item.cliente == obj.Cliente
                              select item).First();*/
 
-                return lista;
+                return requestsResponses.ToList();
+                //return lista;
             }
             else
             {
@@ -268,10 +279,14 @@ namespace Business_Intelligence.Models
         }
 
         //RETRIEVE SEGMENTS/INVOICE INSIGHTS
-        public static List<VendasClienteProduto> getSegmentsInsights(SearchObjects obj)
+         //public static List<VendasClienteProduto> getSegmentsInsights(SearchObjects obj)
+        public static List<List<VendasClienteProduto>> getSegmentsInsights(SearchObjects obj)
         {
+
+            //requestsResponses = new List<VendasClienteProduto>[2];
+
             string query = @"SELECT DISTINCT A.PRODUTO_SEGMENTO, (SELECT SUM(T.VENDA_VLR) 
-                            FROM VW_VendasClienteProduto T WHERE T.PRODUTO_SEGMENTO = A.PRODUTO_SEGMENTO)
+                            FROM VW_VendasClienteProduto T WHERE T.PRODUTO_SEGMENTO = A.PRODUTO_SEGMENTO) FATURAMENTO
                             FROM VW_VendasClienteProduto A
                             WHERE 1 = 1";
 
@@ -365,6 +380,9 @@ namespace Business_Intelligence.Models
 
                     lista.Add(new VendasClienteProduto(val1, Convert.ToInt32(val2), "", 1));
                 }
+
+                requestsResponses[1] = lista;
+
             }
             catch (Exception e)
             {
@@ -385,8 +403,8 @@ namespace Business_Intelligence.Models
                 /* var data = (from item in lista
                              where item.id_cliente == Convert.ToInt32(obj.Cpf) && item.cliente == obj.Cliente
                              select item).First();*/
-
-                return lista;
+                return requestsResponses.ToList();
+                //return lista;
             }
             else
             {

@@ -178,6 +178,9 @@ var url3 = "api/SearchObjects/CPF/''/Produto/''/Segmento/''/Cliente/''/Cidade/''
                    drawChart(jsonResponse, 'ProductsDiv');
                    drawChart(jsonResponse, 'ClientsDiv');
 
+                   xhtp2.open("GET", url, true);
+                   xhtp2.send();
+
                }
 
                resetURLParamValues();
@@ -189,8 +192,7 @@ var url3 = "api/SearchObjects/CPF/''/Produto/''/Segmento/''/Cliente/''/Cidade/''
                }
                document.getElementById("loadingDiv").hidden = true;
 
-               xhtp2.open("GET", url2, true);
-               xhtp2.send();
+               
 
                return jsonResponse;
            }
@@ -221,7 +223,7 @@ var url3 = "api/SearchObjects/CPF/''/Produto/''/Segmento/''/Cliente/''/Cidade/''
            xhtp2.open("GET", url2, true);
            xhtp2.send();*/
            
-           xhtp.open("GET", url, true);
+           xhtp.open("GET", url2, true);
            xhtp.send();
          
          //  return jsonResponse.cliente;
@@ -240,40 +242,80 @@ var url3 = "api/SearchObjects/CPF/''/Produto/''/Segmento/''/Cliente/''/Cidade/''
            var data = new google.visualization.DataTable();
            console.log(data);
            data.addColumn('string', 'nome');
-           data.addColumn('number', 'qtd');
-           console.log('columns created');
+               data.addColumn('number', 'qtd');
+               console.log('columns created' + divID);
            //alert(1 + 'teste');
 
            var vector = jsonData;
 
-           console.log('vetor criado' + vector.length);
+           console.log('vetor criado' + vector[1].length);
 
-           for (var i = 0; i < vector.length; i++) {
-               data.addRow([vector[i].produto, parseInt(vector[i].id_produto)]);
-               console.log('iterando por resultados');
-           }
-        //   alert(1);
-           // Set chart options
-           var options = {
-               'title': 'Products Insights',
-               'width': 500,
-               'height': 400
-           };
+               for (var i = 0; i < vector.length; i++) {
 
+                   console.log('iterando por resultados');
+               
+               if (vector[i] != null) {
+
+                  // data.addRow([vector[i].produto, parseInt(vector[i].id_produto)]);
+                   console.log('VALORES OBJETO ' + Object.getOwnPropertyNames(vector[1]));
+
+                   var objIteration = vector[i];
+                   console.log('obj1  - > ' + objIteration);
+
+                   if (divID == 'SegmentsDiv') {
+                       for (var j = 0; j < 3; j++) {
+                      // for (var j = 1; j < 3; j++) {
+
+                           var objIteraction1 = objIteration[j];
+                           console.log('obj2  - > ' + objIteraction1.cliente);
+                           data.addRow(['Segmento ' + objIteraction1.id_cliente, parseInt(objIteraction1.cliente)]);
+                       }
+                   } else if (divID == 'ProductsDiv') {
+
+                       for (var j = 0; j < objIteration.length-3; j++) {
+
+                           var objIteraction1 = objIteration[j];
+                           console.log('obj2  - > ' + objIteraction1.produto);
+                           data.addRow([objIteraction1.produto, parseInt(objIteraction1.id_produto)]);
+                       }
+                   }
+
+                   else if (divID == 'ClientsDiv') {
+
+                       for (var j = 0; j < objIteration.length - 3; j++) {
+
+                           var objIteraction1 = objIteration[j];
+                           console.log('obj2  - > ' + objIteraction1.produto);
+                           data.addRow([objIteraction1.produto, parseInt(objIteraction1.id_produto)]);
+                       }
+                   }
+                   }
+
+           
+               }
+
+               var p;
+
+               var options = {
+                   'title': 'Products Insights',
+                   'width': 500,
+                   'height': 400
+               };
+/*
+               // Set chart options
+               if (divID = 'SegmentsDiv') {
+                   options.title = 'Segments Insights'
+
+               } else {
+                   options.title = 'Products Insights'
+               }
+               */
            // Instantiate and draw our chart, passing in some options.
                //    var chartProducts = new google.visualization.PieChart(document.getElementById('ProductsDiv'));
             var chartProducts = new google.visualization.PieChart(document.getElementById(divID));
            chartProducts.draw(data, options);
-           
-      //     var chartClients = new google.visualization.BarChart(document.getElementById('ClientsDiv'));
-      //     chartClients.draw(data, options);
-
-       /*    var chartSegments = new google.visualization.ColumnChart(document.getElementById('SegmentsDiv'));
-           chartSegments.draw(data, options);*/
 
            var chBoxes = document.getElementsByTagName("chbAttribute");
-
-          
 
          //  var url = "api/SearchObjects/CPF/''/Produto/''/Segmento/''/Cliente/''/Cidade/''/DataIni/''/DataFim/''/";
                console.log(url);
