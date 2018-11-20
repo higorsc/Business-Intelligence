@@ -177,23 +177,24 @@ var url3 = "api/SearchObjects/CPF/''/Produto/''/Segmento/''/Cliente/''/Cidade/''
                if (this.status == 200 && this.readyState == 4) {
      
                    jsonResponse = JSON.parse(xhtp.response);
-                   drawChart(jsonResponse, 'ProductsDiv');
-                   drawChart(jsonResponse, 'ClientsDiv');
+                //   drawChart(jsonResponse, 'ProductsDiv');
+                //   drawChart(jsonResponse, 'ClientsDiv');
+                   drawChart(jsonResponse, 'SegmentsDiv');
                    console.log("before open URL - > " + url);
 
-                   getValueFromFields(url);
-                   xhtp2.open("GET", url, true);
+                   var URI = getValueFromFields(url);
+                   xhtp2.open("GET", URI, true);
                    xhtp2.send();
 
                }
 
-               resetURLParamValues();
+           //    resetURLParamValues();
 
-               var chBoxes = document.getElementsByTagName("chbAttribute");
+         /*      var chBoxes = document.getElementsByTagName("chbAttribute");
 
                for (var i = 0; i < chBoxes.length; i++) {
                    removeParamFromURL(chBoxes[i]);
-               }
+               }*/
                document.getElementById("loadingDiv").hidden = true;
 
                
@@ -208,20 +209,21 @@ var url3 = "api/SearchObjects/CPF/''/Produto/''/Segmento/''/Cliente/''/Cidade/''
                if (this.status == 200 && this.readyState == 4) {
 
                    jsonResponse = JSON.parse(xhtp.response);
-                   drawChart(jsonResponse, 'SegmentsDiv');
+                   drawChart(jsonResponse, 'ProductsDiv');
 
-                   xhtp3.open("GET", url3, true);
+                   var URI = getValueFromFields(url3);
+                   xhtp3.open("GET", URI, true);
                    xhtp3.send();
 
                }
 
-               resetURLParamValues();
+            //   resetURLParamValues();
 
                var chBoxes = document.getElementsByTagName("chbAttribute");
 
-               for (var i = 0; i < chBoxes.length; i++) {
+           /*    for (var i = 0; i < chBoxes.length; i++) {
                    removeParamFromURL(chBoxes[i]);
-               }
+               */
                document.getElementById("loadingDiv").hidden = true;
                return jsonResponse;
            }
@@ -259,8 +261,8 @@ var url3 = "api/SearchObjects/CPF/''/Produto/''/Segmento/''/Cliente/''/Cidade/''
     //   function drawChart(response) {
            function drawChart(response, divID) {
            validateDates('txtDataIni', 'txtDataFim');
-               getValueFromFields(url);
-               getValueFromFields(url3);
+            //   getValueFromFields(url);
+            //   getValueFromFields(url3);
 
 
            var jsonData = response;
@@ -271,16 +273,16 @@ var url3 = "api/SearchObjects/CPF/''/Produto/''/Segmento/''/Cliente/''/Cidade/''
            console.log(data);
            data.addColumn('string', 'nome');
                data.addColumn('number', 'qtd');
-               console.log('columns created' + divID);
+           //    console.log('columns created' + divID);
            //alert(1 + 'teste');
 
            var vector = jsonData;
 
-           console.log('vetor criado' + vector[1].length);
+      //     console.log('vetor criado' + vector[1].length);
 
                for (var i = 0; i < vector.length; i++) {
 
-                   console.log('iterando por resultados');
+                 //  console.log('iterando por resultados');
                
                if (vector[i] != null) {
 
@@ -288,30 +290,30 @@ var url3 = "api/SearchObjects/CPF/''/Produto/''/Segmento/''/Cliente/''/Cidade/''
                    console.log('VALORES OBJETO ' + Object.getOwnPropertyNames(vector[1]));
 
                    var objIteration = vector[i];
-                   console.log('obj1  - > ' + objIteration);
-                   console.log('length do objeto: ' + objIteration.length);
+                //   console.log('obj1  - > ' + objIteration);
+                //   console.log('length do objeto: ' + objIteration.length);
 
-                   if (divID == 'SegmentsDiv') {
-                       for (var j = 0; j < 3; j++) {
+                   if (divID == 'SegmentsDiv' && i == 1) {
+                       for (var j = 0; j < objIteration.length; j++) {
                            // for (var j = 1; j < 3; j++) {
 
                            var objIteraction1 = objIteration[j];
-                           console.log('obj2  - > ' + objIteraction1.produto + 'length do objeto: ' + objIteration.length);
+                 //          console.log('obj2  - > ' + objIteraction1.produto + 'length do objeto: ' + objIteration.length);
                            data.addRow(['Segmento ' + objIteraction1.id_cliente, parseInt(objIteraction1.cliente)]);
                        }
-                   } else if (divID == 'ProductsDiv') {
+                   } else if (divID == 'ProductsDiv' && i == 0) {
 
-                       for (var j = 0; j < objIteration.length - 8; j++) {
+                       for (var j = 0; j < objIteration.length; j++) {
 
                            var objIteraction1 = objIteration[j];
-                           console.log('obj2  - > ' + objIteraction1.produto + 'length do objeto: ' + objIteration.length);
+                   //        console.log('obj2  - > ' + objIteraction1.produto + 'length do objeto: ' + objIteration.length);
                            data.addRow(['Produto ' + objIteraction1.id_cliente, parseInt(objIteraction1.cliente)]);
                        }
                    }
 
-                   else if (divID == 'ClientsDiv') {
+                   else if (divID == 'ClientsDiv' && i == 2) {
 
-                       for (var j = 1; j < objIteration.length - 3; j++) {
+                       for (var j = 0; j < objIteration.length; j++) {
 
                            var objIteraction1 = objIteration[j];
                            console.log('obj2  - > ' + objIteraction1.produto + 'length do objeto: ' + objIteration.length);
@@ -320,26 +322,31 @@ var url3 = "api/SearchObjects/CPF/''/Produto/''/Segmento/''/Cliente/''/Cidade/''
                    }
                    
                    }
-
-           
+        
                }
 
                var p;
 
                var options = {
-                   'title': 'Products Insights',
+                //   'title': 'Products Insights',
                    'width': 500,
                    'height': 400
                };
-/*
-               // Set chart options
-               if (divID = 'SegmentsDiv') {
-                   options.title = 'Segments Insights'
 
-               } else {
+               // Set chart options
+               if (divID == 'SegmentsDiv') {
+
+                   options.title = 'Segments Insights',
+                       options.width = 1000,
+                       options.height = 500 
+
+               } else if (divID == 'ClientsDiv') {
+                   options.title = 'Clients Insights'
+
+               } else if (divID == 'ProductsDiv') {
                    options.title = 'Products Insights'
                }
-               */
+               
            // Instantiate and draw our chart, passing in some options.
                //    var chartProducts = new google.visualization.PieChart(document.getElementById('ProductsDiv'));
             var chartProducts = new google.visualization.PieChart(document.getElementById(divID));
@@ -388,14 +395,15 @@ function getValueFromFields(param) {
         } console.log(param);//alert(param);
         //    console.log(param2);
     }
+    return param;
 }
 
 //função que valida, e pega informaçções dos campos quando submeter a busca
        function validate() {
 
           validateDates('txtDataIni', 'txtDataFim');
-           getValueFromFields(url);
-           getValueFromFields(url3);
+          // getValueFromFields(url);
+          // getValueFromFields(url3);
 
 
            //    sendRequest(url + '/' + document.getElementById("txtCPF").value);

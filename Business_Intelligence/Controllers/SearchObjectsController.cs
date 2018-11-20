@@ -32,8 +32,8 @@ namespace Business_Intelligence.Controllers
 
         public JsonResult<List<List<VendasClienteProduto>>> Get([FromUri]SearchObjects obj)
         {
-           // SearchObjects.requestsResponses = null;
-
+            // SearchObjects.requestsResponses = null;
+            if (SearchObjects.requestsResponses == null || SearchObjects.requestsResponses[1] == null) SearchObjects.requestsResponses = new List<VendasClienteProduto>[3];
             //  return Json(SearchObjects.getResultsByID(obj));
             return Json(SearchObjects.getProductsInsights(obj));
         }
@@ -43,8 +43,8 @@ namespace Business_Intelligence.Controllers
        //public JsonResult<List<VendasClienteProduto>> GetSegments([FromUri]SearchObjects obj)
         public JsonResult<List<List<VendasClienteProduto>>> GetSegments([FromUri]SearchObjects obj)
         {
-           /// SearchObjects.requestsResponses = null;
-              //return Json(SearchObjects.getResultsByID(obj));
+            if (SearchObjects.requestsResponses == null || SearchObjects.requestsResponses[1] == null) SearchObjects.requestsResponses = new List<VendasClienteProduto>[3];
+            //return Json(SearchObjects.getResultsByID(obj));
             return Json(SearchObjects.getSegmentsInsights(obj));
         }
 
@@ -53,6 +53,8 @@ namespace Business_Intelligence.Controllers
         //public JsonResult<List<VendasClienteProduto>> GetSegments([FromUri]SearchObjects obj)
         public JsonResult<List<List<VendasClienteProduto>>> GetClients([FromUri]SearchObjects obj)
         {
+
+            if (SearchObjects.requestsResponses == null || SearchObjects.requestsResponses[1] == null) SearchObjects.requestsResponses = new List<VendasClienteProduto>[3];
             /// SearchObjects.requestsResponses = null;
             //return Json(SearchObjects.getResultsByID(obj));
             return Json(SearchObjects.getClientsInsights(obj));
@@ -72,5 +74,14 @@ namespace Business_Intelligence.Controllers
         public void Delete(int id)
         {
         }
+
+        public void emptyRequestResponses()
+        {
+
+            SearchObjects.requestsResponses = null;
+
+        }
+
+
     }
 }

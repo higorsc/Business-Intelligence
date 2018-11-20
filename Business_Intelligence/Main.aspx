@@ -24,8 +24,7 @@
 
         function execFuncs() {
 
-            validate();
-          
+            validate();          
         }
 
     </script>
@@ -34,12 +33,12 @@
     <style >
 
         .txtRows{
-            margin-left:4%;
+            margin-left:6%;
             width:8%
         }
 
         .txtFieldsSize{
-            width:90%;
+            width:100%;
             border-color:aqua;
             border-style:solid;
             border-radius: 8px 8px
@@ -63,16 +62,17 @@
             height:2%;
             border-top:solid; 
             border-left:solid; 
-            border-right:solid; 
+            border-right:solid;
+           
             border-color:slategray; 
             border-top-left-radius:5px; 
             border-top-right-radius:5px ; 
-            border-bottom-left-radius:0px; 
-            border-bottom-right-radius:0px
+            border-bottom-left-radius:5px; 
+            border-bottom-right-radius:5px
         }
 
          .divAttributeFields {
-            height:2%;
+            height:3%;
             border-bottom:solid; 
             border-left:solid; 
             border-right:solid; 
@@ -103,8 +103,8 @@
     <form id="form1" runat="server">
    <div class="container-fluid">
        <div class="row" style="align-items:center; height:85% ;text-align:center">
-    <div class="" style=" width:100%; align-self:center; height:30px; text-align:center; margin:2% 3% 3% 3%; height:10%">
-        <p style="font-size:40px;"></p>
+    <div class="jumbotron" style=" width:100%; align-self:center; height:30px; text-align:center; margin:2% 3% 3% 3%; height:10%">
+        <p style="font-size:40px;">Business Intelligence</p>
     </div>
            </div>
 
@@ -135,10 +135,11 @@
                 <label id="lblCliente" class="lblPercentage" onclick="checkChBox(3, this.id)">Cliente:</label>
            </div>
 
-           <div class="txtRows">
+       <!--    <div class="txtRows">
                 <input class="chbAttribute" id="chbCidade" value="Cidade" type="checkbox" title="CPF" onchange="chFilter(4, this.id)"/>
                 <label id="lblCidade" class="lblPercentage" onclick="checkChBox(4, this.id)">Cidade:</label>
            </div>
+            !-->
 
            <div class="txtRows">
                 <input class="chbAttribute" id="chbDataIni" value="DataIni" type="checkbox" title="CPF" onchange="chFilter(4, this.id)"/>
@@ -153,7 +154,7 @@
        <!--     <input type="button" onclick="validateDates('txtDataIni','txtDataFim')"/> !-->
            <!--   <input type="button" onclick="validate()" value="Gerar Graficos"/>  !-->
             <label id="lblValue"></label>
-           <input type="button" onclick="execFuncs()" value="Gerar Graficos" class="btn btn-primary"/> 
+           <input type="button" onclick="execFuncs()" value="Gerar Graficos" class="btn btn-primary" style="margin-left:3%; resize:vertical"/> 
        </div>
     
 
@@ -175,23 +176,23 @@
                 <input type="text" id="txtCliente" hidden="hidden" class="txtFieldsSize"/>
            </div>
 
-           <div class="txtRows">
+        <!--     <div class="txtRows">
                 <input type="text" id="txtCidade" hidden="hidden" class="txtFieldsSize"/>
+           </div> !-->
+
+           <div class="txtRows">
+                <input type="date" style="width:105%; font-size:70%; height:100%" id="txtDataIni" hidden="hidden" class="txtFieldsSize"/>
            </div>
 
            <div class="txtRows">
-                <input type="date" style="width:105%; font-size:90" id="txtDataIni" hidden="hidden" class="txtFieldsSize"/>
-           </div>
-
-           <div class="txtRows">
-                <input type="date" style="width:105%; font-size:90%" id="txtDataFim" hidden="hidden" class="txtFieldsSize" onclick="changeBorderColor(this.id, aqua)"/>
+                <input type="date" style="width:105%; font-size:70%" id="txtDataFim" hidden="hidden" class="txtFieldsSize" onclick="changeBorderColor(this.id, aqua)"/>
            </div>
             
        </div>
 
        <div style="height:1%; max-height:3%" >
-           <input type="checkbox" id="chbShowFacts" onclick="showFacts()"/>
-           <label onclick="checkChBox(1, this.id)" id="lblShowFacts">Filtro por area: </label>
+       <!--    <input type="checkbox" id="chbShowFacts" onclick="showFacts()"/>
+           <label onclick="checkChBox(1, this.id)" id="lblShowFacts">Filtro por area: </label>     !-->
            <label id="lblLoading"></label>
        </div>
 
@@ -216,7 +217,7 @@
 
             <div class="row" style="align-content:center; align-items:center">
 
-                <div class="col-lg-5" id="ProductsDiv" style="border-color:black; border:solid; margin-right:5px; margin-left:100px">
+                <div class="col-lg-5" id="ProductsDiv" style="border-color:black; border:solid; margin-left:100px">
 
                 </div>
 
@@ -228,7 +229,7 @@
 
              <div class="row" style="align-content:center; align-items:center">
 
-                <div class="col-lg-5" id="SegmentsDiv" style="border-color:black; border:solid; margin-right:5px; margin-left:100px">
+                <div class="col-lg-10" id="SegmentsDiv" style="border-color:black; border:solid; margin-left:100px; align-items:center; align-content:center; text-align:center">
 
                 </div>
 <!--

@@ -153,13 +153,18 @@ namespace Business_Intelligence.Models
 
             //string query = "SELECT TOP(10) * FROM VW_VendasClienteProduto WHERE 1 = 1";
 
-            string query = @"SELECT TOP(10) B.PRODUCT_ID, (SELECT SUM(T.PRODUCT_TOTAL_VLR) FROM PRODUTO_VENDA T WHERE T.VENDA_ID = A.VENDA_ID) AS FATURAMENTO
-                            FROM VENDAS A, PRODUTO_VENDA B
-                            WHERE A.VENDA_ID = B.VENDA_ID ";
+            /* string query = @"SELECT TOP(10) B.PRODUCT_ID, (SELECT SUM(T.PRODUCT_TOTAL_VLR) FROM PRODUTO_VENDA T WHERE T.VENDA_ID = A.VENDA_ID) AS FATURAMENTO
+                             FROM VENDAS A, PRODUTO_VENDA B
+                             WHERE A.VENDA_ID = B.VENDA_ID ";
+                             */
+
+            string query = @"SELECT TOP(10) A.PRODUCT_ID, (SELECT SUM(T.PRODUCT_TOTAL_VLR) FROM PRODUTO_VENDA T WHERE T.VENDA_ID = A.VENDA_ID) AS FATURAMENTO
+							FROM VW_VendasClienteProduto A
+							WHERE 1 = 1 ";
 
             List<VendasClienteProduto> lista = new List<VendasClienteProduto>();
 
-            if (DBConnection.isConnected == false)
+            if (DBConnection.isConnected == false || !DBConnection.conn.State.Equals("Open"))
             {
                 DBConnection.connect();
             }
@@ -169,17 +174,17 @@ namespace Business_Intelligence.Models
 
                 if (obj.Cpf != null && !obj.Cpf.Equals("''"))
                 {
-                    query += " AND CLIENTE_ID = " + obj.Cpf;
+                    query += " AND A.CLIENTE_ID = " + obj.Cpf;
                 }
 
                 if (obj.Cliente != null && !obj.Cliente.Equals("''"))
                 {
-                    query += " AND CLIENTE_NAME = '" + obj.Cliente + "'";
+                    query += " AND A.CLIENTE_NAME = '" + obj.Cliente + "'";
                 }
 
                 if (obj.Produto != null && !obj.Produto.Equals("''"))
                 {
-                    query += " AND PRODUCT_ID = " + obj.Produto ;
+                    query += " AND A.PRODUCT_ID = " + obj.Produto ;
                 }
 
                 if (obj.Segmento != null && !obj.Segmento.Equals("''"))
@@ -200,15 +205,15 @@ namespace Business_Intelligence.Models
 
                             if (i == 0)
                             {
-                                query += " AND (PRODUTO_SEGMENTO = " + segmentosSelecionados[i];
+                                query += " AND (A.PRODUTO_SEGMENTO = " + segmentosSelecionados[i];
                             }
                             else if (i == segs.Length-1)
                             {
-                                query += " OR PRODUTO_SEGMENTO = " + segmentosSelecionados[i] + ") ";
+                                query += " OR A.PRODUTO_SEGMENTO = " + segmentosSelecionados[i] + ") ";
                             }
                             else
                             {
-                                query += " OR PRODUTO_SEGMENTO = " + segmentosSelecionados[i] ;
+                                query += " OR A.PRODUTO_SEGMENTO = " + segmentosSelecionados[i] ;
                             }
                         }
 
@@ -216,26 +221,26 @@ namespace Business_Intelligence.Models
 
                     else
                     {
-                        query += " AND PRODUTO_SEGMENTO = " + obj.Segmento;
+                        query += " AND A.PRODUTO_SEGMENTO = " + obj.Segmento;
                     }
                 }
 
                 if (obj.DataIni != null && !obj.DataIni.Equals("''"))
                 {
-                    query += " AND DATA_VENDA >= '" + obj.DataIni + "'";
+                    query += " AND A.DATA_VENDA >= '" + obj.DataIni + "'";
                 }
 
                 if (obj.DataFim != null && !obj.DataFim.Equals("''"))
                 {
-                    query += " AND DATA_VENDA <= '" + obj.DataFim + "'";
+                    query += " AND A.DATA_VENDA <= '" + obj.DataFim + "'";
                 }
 
                 if (obj.Cidade != null && !obj.Cidade.Equals("''"))
                 {
-                    query += " AND CIDADE = '" + obj.Cidade + "'";
+                    query += " AND A.CIDADE = '" + obj.Cidade + "'";
                 }
-
-                query += " GROUP BY B.PRODUCT_ID, A.VENDA_ID";
+                query += " ORDER BY A.PRODUCT_TOTAL_VLR DESC";
+              //  query += " GROUP BY A.PRODUCT_ID, A.VENDA_ID";
 
                 SqlDataReader reader = DBConnection.getResults(query);
                 // SqlDataReader reader = DBConnection.getResults("SELECT * FROM VW_VendasClienteProduto WHERE CLIENTE_ID = " + obj.Cpf);
@@ -295,11 +300,12 @@ namespace Business_Intelligence.Models
             string query = @"SELECT DISTINCT A.PRODUTO_SEGMENTO, (SELECT SUM(T.VENDA_VLR) 
                             FROM VW_VendasClienteProduto T WHERE T.PRODUTO_SEGMENTO = A.PRODUTO_SEGMENTO) FATURAMENTO
                             FROM VW_VendasClienteProduto A
-                            WHERE 1 = 1";
+                            WHERE 1 = 1
+                            ORDER BY A.PRODUTO_SEGMENTO ASC";
 
             List<VendasClienteProduto> lista = new List<VendasClienteProduto>();
 
-            if (DBConnection.isConnected == false)
+            if (DBConnection.isConnected == false || !DBConnection.conn.State.Equals("Open"))
             {
                 DBConnection.connect();
             }
@@ -425,13 +431,17 @@ namespace Business_Intelligence.Models
 
             //requestsResponses = new List<VendasClienteProduto>[2];
 
-            string query = @"SELECT TOP(10) B.CLIENTE_ID, (SELECT SUM(A.VENDA_VLR) FROM VENDAS T WHERE T.CLIENTE_ID = B.CLIENTE_ID) AS FATURAMENTO
-                             FROM VENDAS A, CLIENTE_PARENT B
-                             WHERE A.CLIENTE_ID = B.CLIENTE_ID";
+            /*  string query = @"SELECT TOP(10) B.CLIENTE_ID, (SELECT SUM(A.VENDA_VLR) FROM VENDAS T WHERE T.CLIENTE_ID = B.CLIENTE_ID) AS FATURAMENTO
+                               FROM VENDAS A, CLIENTE_PARENT B
+                               WHERE A.CLIENTE_ID = B.CLIENTE_ID";*/
+
+            string query = @" SELECT TOP(10) A.CLIENTE_ID, SUM(A.VENDA_VLR) OVER (PARTITION BY A.CLIENTE_ID ORDER BY A.VENDA_VLR) AS FATURAMENTO
+							 FROM VW_VendasClienteProduto A 
+                             WHERE 1=1 ";
 
             List<VendasClienteProduto> lista = new List<VendasClienteProduto>();
 
-            if (DBConnection.isConnected == false)
+            if (DBConnection.isConnected == false || !DBConnection.conn.State.Equals("Open"))
             {
                 DBConnection.connect();
             }
@@ -441,17 +451,17 @@ namespace Business_Intelligence.Models
 
                 if (obj.Cpf != null && !obj.Cpf.Equals("''"))
                 {
-                    query += " AND CLIENTE_ID = " + obj.Cpf;
+                    query += " AND A.CLIENTE_ID = " + obj.Cpf;
                 }
 
                 if (obj.Cliente != null && !obj.Cliente.Equals("''"))
                 {
-                    query += " AND CLIENTE_NAME = '" + obj.Cliente + "'";
+                    query += " AND A.CLIENTE_NAME = '" + obj.Cliente + "'";
                 }
 
                 if (obj.Produto != null && !obj.Produto.Equals("''"))
                 {
-                    query += " AND PRODUCT_ID = " + obj.Produto;
+                    query += " AND A.PRODUCT_ID = " + obj.Produto;
                 }
 
                 if (obj.Segmento != null && !obj.Segmento.Equals("''"))
@@ -472,15 +482,15 @@ namespace Business_Intelligence.Models
 
                             if (i == 0)
                             {
-                                query += " AND (PRODUTO_SEGMENTO = " + segmentosSelecionados[i];
+                                query += " AND (A.PRODUTO_SEGMENTO = " + segmentosSelecionados[i];
                             }
                             else if (i == segs.Length - 1)
                             {
-                                query += " OR PRODUTO_SEGMENTO = " + segmentosSelecionados[i] + ") ";
+                                query += " OR A.PRODUTO_SEGMENTO = " + segmentosSelecionados[i] + ") ";
                             }
                             else
                             {
-                                query += " OR PRODUTO_SEGMENTO = " + segmentosSelecionados[i];
+                                query += " OR A.PRODUTO_SEGMENTO = " + segmentosSelecionados[i];
                             }
                         }
 
@@ -488,26 +498,26 @@ namespace Business_Intelligence.Models
 
                     else
                     {
-                        query += " AND PRODUTO_SEGMENTO = " + obj.Segmento;
+                        query += " AND A.PRODUTO_SEGMENTO = " + obj.Segmento;
                     }
                 }
 
                 if (obj.DataIni != null && !obj.DataIni.Equals("''"))
                 {
-                    query += " AND DATA_VENDA >= '" + obj.DataIni + "'";
+                    query += " AND A.DATA_VENDA >= '" + obj.DataIni + "'";
                 }
 
                 if (obj.DataFim != null && !obj.DataFim.Equals("''"))
                 {
-                    query += " AND DATA_VENDA <= '" + obj.DataFim + "'";
+                    query += " AND A.DATA_VENDA <= '" + obj.DataFim + "'";
                 }
 
                 if (obj.Cidade != null && !obj.Cidade.Equals("''"))
                 {
-                    query += " AND CIDADE = '" + obj.Cidade + "'";
+                    query += " AND A.CIDADE = '" + obj.Cidade + "'";
                 }
 
-                query += " GROUP BY B.CLIENTE_ID";
+             //   query += " GROUP BY B.CLIENTE_ID";
 
                 SqlDataReader reader = DBConnection.getResults(query);
                 // SqlDataReader reader = DBConnection.getResults("SELECT * FROM VW_VendasClienteProduto WHERE CLIENTE_ID = " + obj.Cpf);
